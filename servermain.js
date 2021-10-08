@@ -5,9 +5,25 @@ const createHTML = require('create-html');
 const { JSDOM } = require( "jsdom" );
 const { window } = new JSDOM( "" );
 const $ = require( "jquery" )( window );
-const ip4 = 'xxx.xxx.xxx.xxx'; //ipv4 address
 const { COPYFILE_EXCL } = fs.constants;
-const filignore = [".gitignore", "runserver.bat", "servermain.js", "mainstylesheet.css"];
+const filignore = [".gitignore", "runserver.bat", "dependencies.bat", "servermain.js", "mainstylesheet.css"];
+
+const { networkInterfaces } = require('os');
+const nets = networkInterfaces();
+const results = Object.create(null);
+
+for (const name of Object.keys(nets)) {
+    for (const net of nets[name]) {
+        if (net.family === 'IPv4' && !net.internal) {
+            if (!results[name]) {
+                results[name] = [];
+            }
+            results[name].push(net.address);
+        }
+    }
+}
+
+const ip4 = results["Wi-Fi"][0]; //ipv4 address
 let portnum = 8080;
 let html;
 let contentType = {'Content-Type':'text/html'};
